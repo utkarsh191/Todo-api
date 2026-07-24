@@ -59,3 +59,17 @@ exports.getSingleTodo = async (req, res) => {
     });
   }
 };
+
+const todo = await Todo.findOneAndUpdate({
+_id: req.params.id,
+user: req.user.id,
+},
+{
+  title,
+  description,
+  completed,
+},
+{
+  new: true,
+}
+);
