@@ -17,18 +17,34 @@ exports.createTodo = async (req, res) => {
   });
 };
 
-exports.getAllTodos = async(req, res) => {
+exports.getAllTodos = async (req, res) => {
   try {
-    const todos = await Todo.find({ user: req.user.id});
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    const skip = (page - 1) * limit;
+
+    const todos = await Todo.find({
+      user: req.user.id,
+    })
+      .skip(skip)
+      .limit(limit);
+
+    const totalTodos = await Todo.countDocuments({
+      user: req.user.id,
+    });
 
     return res.status(200).json({
       success: true,
+      currentPage: page,
+      totalPages: Math.ceil(totalTodos / limit),
+      totalTodos,
       count: todos.length,
       todos,
     });
   } catch (error) {
     return res.status(500).json({
-      success: false, 
+      success: false,
       message: "Server Error",
     });
   }
