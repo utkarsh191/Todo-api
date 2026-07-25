@@ -73,3 +73,42 @@ user: req.user.id,
   new: true,
 }
 );
+
+exports.updateTodo = async(req,res) => {
+  try{
+    const { title, description, completed } = req.body;
+
+    const todo = await Todo.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        user: req.user.id,
+      },
+      {
+        title,
+        description,
+        completed,
+      },
+      {
+        new: true,
+      }
+    );
+
+    if(!todo) {
+      return res.status(404).json({
+        success: false,
+        message: " Todo not found",
+      });
+    }
+
+    return res.status(200).json({
+      success: true,
+      message: "Todo updated successfully",
+      todo,
+    });
+  } catch (error) {
+    return res.status(500).json({
+    success: false,
+    message: "Server Error",
+    });
+  }
+};
