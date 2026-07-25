@@ -1,6 +1,7 @@
 const Todo = require("../models/todo");
 
 exports.createTodo = async (req, res) => {
+  try{
   const { title, description } = req.body;
 
   const todo = new Todo({
@@ -15,6 +16,12 @@ exports.createTodo = async (req, res) => {
     message: "Todo created successfully",
     todo,
   });
+}catch (error) {
+  return res.status(500).json({
+    success: false,
+    message: "Server Error",
+  });
+ }
 };
 
 exports.getAllTodos = async (req, res) => {
