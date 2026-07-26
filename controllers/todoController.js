@@ -31,6 +31,19 @@ exports.getAllTodos = async (req, res) => {
 
     const skip = (page - 1) * limit;
 
+    //search
+    const search = req.query.search || "";
+
+    //query object
+    const query = {
+      user: req.query.id,
+      $or: [
+        { title: { $regex: search, $options: "i"} },
+        { description: { $regex: search,$options: "i"} },
+      ],
+    };
+
+
     const todos = await Todo.find({
       user: req.user.id,
     })
@@ -82,20 +95,6 @@ exports.getSingleTodo = async (req, res) => {
     });
   }
 };
-
-const todo = await Todo.findOneAndUpdate({
-_id: req.params.id,
-user: req.user.id,
-},
-{
-  title,
-  description,
-  completed,
-},
-{
-  new: true,
-}
-);
 
 exports.updateTodo = async(req,res) => {
   try{
