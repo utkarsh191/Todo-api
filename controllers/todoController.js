@@ -1,7 +1,7 @@
 const Todo = require("../models/todo");
+const asyncHandler = require("../utils/asyncHandler");
 
-exports.createTodo = async (req, res) => {
-  try{
+exports.createTodo = asyncHandler(async (req, res) => {
   const { title, description } = req.body;
 
   const todo = new Todo({
@@ -16,16 +16,10 @@ exports.createTodo = async (req, res) => {
     message: "Todo created successfully",
     todo,
   });
-}catch (error) {
-  return res.status(500).json({
-    success: false,
-    message: "Server Error",
-  });
- }
-};
+});
 
-exports.getAllTodos = async (req, res) => {
-  try {
+
+exports.getAllTodos = asyncHandler(async (req, res) => {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
 
@@ -33,9 +27,9 @@ exports.getAllTodos = async (req, res) => {
 
     //search
     const search = req.query.search || "";
-
+    //filter
     const completed = req.query.completed;
-
+    //sort
     const sort = req.query.sort || "-createdAt";
 
     //query object
@@ -50,7 +44,7 @@ exports.getAllTodos = async (req, res) => {
       ];
     }
 
-    if(completed != undefined) {
+    if(completed !== undefined) {
       query.completed = completed === "true";
     }
 
@@ -70,16 +64,9 @@ exports.getAllTodos = async (req, res) => {
       count: todos.length,
       todos,
     });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: "Server Error",
-    });
-  }
-};
+});
 
-exports.getSingleTodo = async (req, res) => {
-  try {
+exports.getSingleTodo = asyncHandler(async (req, res) => {
     const todo = await Todo.findOne({
       _id: req.params.id,
       user: req.user.id,
@@ -96,18 +83,9 @@ exports.getSingleTodo = async (req, res) => {
       success: true,
       todo,
     });
-  } catch (error) {
-    console.log(error);
+});
 
-    return res.status(500).json({
-    success: false,
-    message: "Server Error",
-    });
-  }
-};
-
-exports.updateTodo = async(req,res) => {
-  try{
+exports.updateTodo = asyncHandler(async(req,res) => {
     const { title, description, completed } = req.body;
 
     const todo = await Todo.findOneAndUpdate(
@@ -137,16 +115,9 @@ exports.updateTodo = async(req,res) => {
       message: "Todo updated successfully",
       todo,
     });
-  } catch (error) {
-    return res.status(500).json({
-    success: false,
-    message: "Server Error",
-    });
-  }
-};
+});
 
-exports.delete = async (req, res) => {
-  try {
+exports.delete = asyncHandler(async (req, res) => {
     const todo = await Todo.findOneAndDelete({
       _id: req.params.id,
       user: req.user.id,
@@ -163,10 +134,4 @@ exports.delete = async (req, res) => {
       success: true,
       message: "Todo deleted successfully",
     });
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      message: " Server Error",
-    });
-  }
-};
+});
