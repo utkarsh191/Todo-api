@@ -36,6 +36,8 @@ exports.getAllTodos = async (req, res) => {
 
     const completed = req.query.completed;
 
+    const sort = req.query.sort || "-createdAt";
+
     //query object
     const query = {
       user: req.user.id,
@@ -54,12 +56,11 @@ exports.getAllTodos = async (req, res) => {
 
 
     const todos = await Todo.find(query)
+      .sort(sort)
       .skip(skip)
       .limit(limit);
 
-    const totalTodos = await Todo.countDocuments({
-      user: req.user.id,
-    });
+    const totalTodos = await Todo.countDocuments(query);
 
     return res.status(200).json({
       success: true,
