@@ -34,19 +34,26 @@ exports.getAllTodos = async (req, res) => {
     //search
     const search = req.query.search || "";
 
+    const completed = req.query.completed;
+
     //query object
     const query = {
-      user: req.query.id,
-      $or: [
-        { title: { $regex: search, $options: "i"} },
-        { description: { $regex: search,$options: "i"} },
-      ],
+      user: req.user.id,
     };
 
+    if(search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i"} },
+        { description: { $regex: search,$options: "i"} },
+      ];
+    }
 
-    const todos = await Todo.find({
-      user: req.user.id,
-    })
+    if(completed != undefined) {
+      query.completed = completed === "true";
+    }
+
+
+    const todos = await Todo.find(query)
       .skip(skip)
       .limit(limit);
 
