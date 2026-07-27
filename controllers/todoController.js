@@ -146,3 +146,29 @@ exports.delete = asyncHandler(async (req, res) => {
         message: "Todo deleted successfully",
     });
 });
+
+exports.restoreTodo = asyncHandler(async (req, res) => {
+  const todo = await Todo.findOne({
+    _id: req.params.id,
+    user: req.user.id,
+    isDeleted: true,
+  });
+
+  if (!todo) {
+    return res.status(404).json({
+      success: false,
+      message: "Deleted todo not found",
+    });
+  }
+
+  todo.isDeleted = false;
+  todo.deletedAt = null;
+
+  await todo.save();
+
+  return res.status(200).json({
+    success: true,
+    message: "Todo restored successfully",
+    todo,
+  });
+});
