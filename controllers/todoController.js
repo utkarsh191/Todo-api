@@ -2,11 +2,12 @@ const Todo = require("../models/todo");
 const asyncHandler = require("../utils/asyncHandler");
 
 exports.createTodo = asyncHandler(async (req, res) => {
-  const { title, description } = req.body;
+  const { title, description, priority } = req.body;
 
   const todo = new Todo({
     title,
     description,
+    priority,
     user: req.user.id,
   });
 
@@ -88,7 +89,7 @@ exports.getSingleTodo = asyncHandler(async (req, res) => {
 });
 
 exports.updateTodo = asyncHandler(async(req,res) => {
-    const { title, description, completed } = req.body;
+    const { title, description, completed, priority } = req.body;
 
     const todo = await Todo.findOneAndUpdate(
       {
@@ -96,11 +97,12 @@ exports.updateTodo = asyncHandler(async(req,res) => {
         user: req.user.id,
         isDeleted: false,
       },
-      {
-        title,
-        description,
-        completed,
-      },
+    {
+  ...(title !== undefined && { title }),
+  ...(description !== undefined && { description }),
+  ...(completed !== undefined && { completed }),
+  ...(priority !== undefined && { priority }),
+},
       {
         new: true,
       }

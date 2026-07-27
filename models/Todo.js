@@ -17,6 +17,12 @@ const todoSchema = new mongoose.Schema(
     maxlength:[500, " Title cannot exceed 500 character"]
   },
 
+    priority: {
+    type: String,
+    enum: ["Low", "Medium", "High"],
+    default: "Medium",
+  },
+
   completed: {
     type: Boolean,
     default: false,
