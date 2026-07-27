@@ -12,6 +12,11 @@ const {
 const authMiddleware = require("../middleware/authMiddleware");
 const validate = require("../middleware/validate");
 
+const {
+  createTodoSchema,
+  updateTodoSchema,
+} = require("../validation/todoValidation");
+
 
 router.post("/", authMiddleware, validate(createTodoSchema), createTodo);
 router.get("/", authMiddleware, getAllTodos);

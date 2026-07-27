@@ -7,7 +7,7 @@ const {
 } = require("../controllers/authController");
 
 const validate = require("../middleware/validate");
-const { signupSchema } = require("../validation/authValidation");
+const { signupSchema, loginSchema} = require("../validation/authValidation");
 
 router.post("/signup", validate(signupSchema),signup);
 router.post("/login", validate(loginSchema), login);
