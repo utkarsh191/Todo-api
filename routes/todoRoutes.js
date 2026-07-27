@@ -10,11 +10,13 @@ const {
 } = require("../controllers/todoController");
 
 const authMiddleware = require("../middleware/authMiddleware");
+const validate = require("../middleware/validate");
 
-router.post("/", authMiddleware, createTodo);
+
+router.post("/", authMiddleware, validate(createTodoSchema), createTodo);
 router.get("/", authMiddleware, getAllTodos);
 router.get("/:id", authMiddleware, getSingleTodo);
-router.put("/:id", authMiddleware, updateTodo);
+router.put("/:id", authMiddleware,validate(updateTodoSchema), updateTodo);
 router.delete("/:id", authMiddleware, deleteTodo);
 
 module.exports = router;

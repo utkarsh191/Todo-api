@@ -6,7 +6,10 @@ const {
   login,
 } = require("../controllers/authController");
 
-router.post("/signup", signup);
-router.post("/login", login);
+const validate = require("../middleware/validate");
+const { signupSchema } = require("../validation/authValidation");
+
+router.post("/signup", validate(signupSchema),signup);
+router.post("/login", validate(loginSchema), login);
 
 module.exports = router;
