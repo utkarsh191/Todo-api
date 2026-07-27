@@ -35,6 +35,7 @@ exports.getAllTodos = asyncHandler(async (req, res) => {
     //query object
     const query = {
       user: req.user.id,
+      isDeleted: false,
     };
 
     if(search) {
@@ -70,6 +71,7 @@ exports.getSingleTodo = asyncHandler(async (req, res) => {
     const todo = await Todo.findOne({
       _id: req.params.id,
       user: req.user.id,
+      isDeleted: false,
     });
 
     if (!todo) {
@@ -92,6 +94,7 @@ exports.updateTodo = asyncHandler(async(req,res) => {
       {
         _id: req.params.id,
         user: req.user.id,
+        isDeleted: false,
       },
       {
         title,
@@ -118,20 +121,28 @@ exports.updateTodo = asyncHandler(async(req,res) => {
 });
 
 exports.delete = asyncHandler(async (req, res) => {
-    const todo = await Todo.findOneAndDelete({
-      _id: req.params.id,
-      user: req.user.id,
+
+    const todo = await Todo.findOne({
+        _id: req.params.id,
+        user: req.user.id,
+        isDeleted: false,
     });
 
-    if(!todo) {
-      return res.status(404).json({
-        success: false,
-        message: "Todo not found",
-      });
+    if (!todo) {
+        return res.status(404).json({
+            success: false,
+            message: "Todo not found",
+        });
     }
 
+    // Soft Delete
+    todo.isDeleted = true;
+    todo.deletedAt = new Date();
+
+    await todo.save();
+
     return res.status(200).json({
-      success: true,
-      message: "Todo deleted successfully",
+        success: true,
+        message: "Todo deleted successfully",
     });
 });

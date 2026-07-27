@@ -27,6 +27,16 @@ const todoSchema = new mongoose.Schema(
     ref: "User",
     required: [true, "User is required."]
   },
+
+  isDeleted: {
+  type: Boolean,
+  default: false,
+},
+
+  deletedAt: {
+  type: Date,
+  default: null,
+ },
 },
 {
   timestamps: true,
