@@ -3,6 +3,8 @@ const morgan = require("morgan");
 const helmet = require("helmet");
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("./swagger/swagger");
 
 const todoRoutes = require("./routes/todoRoutes");
 const authRoutes = require("./routes/authRoutes");
@@ -20,10 +22,10 @@ const limiter = rateLimit({
 });
 
 app.use(express.json());
-app.use(morgan("dev"));
-app.use(limiter);
-app.use(helmet());
 app.use(cors());
+app.use(limiter);
+app.use(morgan("dev"));
+app.use(helmet());
 
 app.get("/", (req,res) => {
   res.send("Todo API Running...");
@@ -31,6 +33,7 @@ app.get("/", (req,res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/todos", todoRoutes);
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Error Middleware (Always Last)
 app.use(errorMiddleware);
