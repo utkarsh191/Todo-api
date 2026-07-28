@@ -1,8 +1,13 @@
-exports.uploadImages = (req, res) => {
+const cloudinary = require("../config/cloudinary");
+
+exports.uploadImages = async (req, res) => {
+  const result = await cloudinary.uploader.upload(req.files[0].path);
+  console.log(result);
   res.status(200).json({
     success: true,
     message: "Files uploaded successfully",
-    files: req.files,
+    imageUrl: result.secure_url,
+    publicId: result.public_id,
   });
 };
 
