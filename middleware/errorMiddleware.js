@@ -1,10 +1,18 @@
-const errorMiddleware = (err, req, res, next) => {
-  const statusCode = err.statusCode || 500;
+const errorHandler = (err, req, res, next) => {
+  //File type validation error
+  if(err.message === "Only JPG, JPEG and PNG files are allowed.") {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
 
-  res.status(statusCode).json({
+  //baaki sab errors
+
+  res.status(500).json({
     success: false,
-    message: err.message || "Internal Server Error",
+    message: err.message || "internal server error",
   });
 };
 
-module.exports = errorMiddleware;
+module.exports = errorHandler;
