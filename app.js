@@ -28,6 +28,8 @@ app.use(limiter);
 app.use(morgan("dev"));
 app.use(helmet());
 
+app.use("/uploads", express.static("uploads"));
+
 app.get("/", (req,res) => {
   res.send("Todo API Running...");
 });
