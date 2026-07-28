@@ -1,3 +1,5 @@
+const multer = require("multer");
+
 const errorHandler = (err, req, res, next) => {
   //File type validation error
   if(err.message === "Only JPG, JPEG and PNG files are allowed.") {
@@ -5,6 +7,16 @@ const errorHandler = (err, req, res, next) => {
       success: false,
       message: err.message,
     });
+  }
+
+    // Multer errors
+  if (err instanceof multer.MulterError) {
+    if (err.code === "LIMIT_FILE_SIZE") {
+      return res.status(400).json({
+        success: false,
+        message: "File size should not exceed 2 MB.",
+      });
+    }
   }
 
   //baaki sab errors
