@@ -1,3 +1,4 @@
+const uploadRoutes = require("./routes/uploadRoutes");
 const express = require("express");
 const morgan = require("morgan");
 const helmet = require("helmet");
@@ -33,6 +34,7 @@ app.get("/", (req,res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api/todos", todoRoutes);
+app.use("/api/upload", uploadRoutes);
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // Error Middleware (Always Last)
