@@ -1,6 +1,7 @@
-exports.uploadImage = (req, res) => {
-  res.json({
-    message: "File uploaded successfully",
-    file: req.file,
+exports.uploadImages = (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Files uploaded successfully",
+    files: req.files,
   });
 };
