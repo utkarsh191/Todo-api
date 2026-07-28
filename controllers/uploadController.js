@@ -1,8 +1,9 @@
 const cloudinary = require("../config/cloudinary");
+const fs = require("fs");
 
 exports.uploadImages = async (req, res) => {
   const result = await cloudinary.uploader.upload(req.files[0].path);
-  console.log(result);
+  fs.unlinkSync(req.files[0].path);
   res.status(200).json({
     success: true,
     message: "Files uploaded successfully",
