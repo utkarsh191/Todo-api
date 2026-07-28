@@ -21,3 +21,11 @@ exports.registerUser = (req, res) => {
     data: req.body,
   });
 };
+
+exports.uploadAnyFiles = (req, res) => {
+  res.status(200).json({
+    success:true,
+    message: "Files uploaded successfully",
+    files: req.files,
+  });
+}

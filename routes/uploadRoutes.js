@@ -3,7 +3,7 @@ const router = express.Router();
 
 const upload = require("../middleware/upload");
  
-const { uploadImages , uploadProfileAndCover,  registerUser,} = require("../controllers/uploadController");
+const { uploadImages , uploadProfileAndCover,  registerUser, uploadAnyFiles} = require("../controllers/uploadController");
 
 
 
@@ -20,6 +20,12 @@ router.post(
   "/register",
   upload.none(),
   registerUser
+);
+
+router.post(
+  "/any",
+  upload.any(),
+  uploadAnyFiles
 );
 
 module.exports = router;
