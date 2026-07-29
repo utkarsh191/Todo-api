@@ -1,6 +1,10 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const Otp = require("../models/Otp");
+const generateOTP = require("../utils/generateOTP");
+const sendMail = require("../utils/sendMail");
+const otpTemplate = require("../templates/otpTemplate");
 
 exports.signup = async (req, res) => {
   const { name, email, password} = req.body;
@@ -22,6 +26,22 @@ exports.signup = async (req, res) => {
   });
 
   await user.save();  
+
+  const otp = generateOTP();
+
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+  await Otp.create({
+   email,
+   otp,
+   expiresAt,
+  });
+
+  await sendMail(
+  email,
+  "Email Verification OTP",
+  otpTemplate(otp)
+);
 
   return res.status(201).json({     //A new resource (the user) was successfully created.
     message: "user registered successfully",
