@@ -54,6 +54,42 @@ exports.signup = async (req, res) => {
     });
 };
 
+exports.verifyOTP = async (req, res) => {
+  const { email, otp } = req.body;
+
+  const otpRecord = await Otp.findOne({ email, otp });
+
+  if (!otpRecord) {
+  return res.status(400).json({
+    message: "Invalid OTP",
+  });
+}
+
+if (otpRecord.expiresAt < new Date()) {
+  return res.status(400).json({
+    message: "OTP has expired",
+  });
+}
+
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
+
+  user.isVerified = true;
+  await user.save();
+
+  await Otp.deleteOne({ _id: otpRecord._id });
+
+  return res.status(200).json({
+  success: true,
+  message: "Email verified successfully",
+});
+};
+
 exports.login = async(req, res) => {
   const { email, password } = req.body;
 
@@ -64,6 +100,13 @@ exports.login = async(req, res) => {
       message: "User not found",
     });
   }
+
+  if (!user.isVerified) {
+  return res.status(400).json({
+    message: "Please verify your email first",
+  });
+}
+
 
   const isMatch = await bcrypt.compare(password, user.password);
 
