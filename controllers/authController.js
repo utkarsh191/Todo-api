@@ -90,6 +90,55 @@ if (otpRecord.expiresAt < new Date()) {
 });
 };
 
+exports.resendOTP = async (req, res) => {
+  const { email } = req.body;
+
+  // Check if user exists
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
+
+  // Check if email is already verified
+  if (user.isVerified) {
+    return res.status(400).json({
+      message: "Email is already verified",
+    });
+  }
+
+  // Delete old OTP if it exists
+  await Otp.deleteMany({ email });
+
+  // Generate new OTP
+  const otp = generateOTP();
+
+  // Set expiry time (5 minutes)
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000);
+
+  // Save new OTP
+  await Otp.create({
+    email,
+    otp,
+    expiresAt,
+  });
+
+  // Send OTP email
+  await sendMail(
+    email,
+    "Email Verification OTP",
+    otpTemplate(otp)
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: "OTP sent successfully",
+  });
+};
+
+
 exports.login = async(req, res) => {
   const { email, password } = req.body;
 
