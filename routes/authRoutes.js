@@ -8,8 +8,10 @@ const {
   resendOTP,
   forgotPassword,
   verifyForgotOTP,
-  resendOTP,
+  changePassword,
 } = require("../controllers/authController");
+
+const authMiddleware = require("../middleware/authMiddleware");
 
 const validate = require("../middleware/validate");
 const { signupSchema, loginSchema} = require("../validation/authValidation");
@@ -51,7 +53,7 @@ router.post("/verify-otp", verifyOTP);
 router.post("/resend-otp", resendOTP);
 router.post("/forgot-password", forgotPassword);
 router.post("/verifyForgotOTP", verifyForgotOTP);
-router.post("/resendOTP", resendOTP);
+router.post("/change-password", authMiddleware, changePassword);
 
 
 
