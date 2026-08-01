@@ -1,4 +1,4 @@
-const asyncHandler = require("../utilss/asyncHandler");
+const asyncHandler = require("../utils/asyncHandler");
 const sendMail = require("../utils/sendMail");
 
 exports.sendTestMail = asyncHandler(async (req,res) =>{
