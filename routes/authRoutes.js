@@ -8,6 +8,7 @@ const {
   resendOTP,
   forgotPassword,
   verifyForgotOTP,
+  resendOTP,
 } = require("../controllers/authController");
 
 const validate = require("../middleware/validate");
@@ -50,6 +51,8 @@ router.post("/verify-otp", verifyOTP);
 router.post("/resend-otp", resendOTP);
 router.post("/forgot-password", forgotPassword);
 router.post("/verifyForgotOTP", verifyForgotOTP);
+router.post("/resendOTP", resendOTP);
+
 
 
 module.exports = router;

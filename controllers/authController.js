@@ -205,6 +205,35 @@ exports.verifyForgotOTP = async (req, res) => {
   });
 };
 
+exports.resetPassword = async (req, res) => {
+  const { email, newPassword } = req.body;
+
+  // Find User
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found",
+    });
+  }
+
+  // Hash New Password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Update Password
+  user.password = hashedPassword;
+
+  await user.save();
+
+  // Delete OTP
+  await Otp.deleteMany({ email });
+
+  return res.status(200).json({
+    success: true,
+    message: "Password reset successfully",
+  });
+};
+
 exports.login = async(req, res) => {
   const { email, password } = req.body;
 
