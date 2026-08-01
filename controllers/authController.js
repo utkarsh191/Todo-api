@@ -180,6 +180,31 @@ exports.forgotPassword = async (req, res) => {
   });
 };
 
+exports.verifyForgotOTP = async (req, res) => {
+  const { email, otp } = req.body;
+
+  // Find OTP
+  const otpRecord = await Otp.findOne({ email, otp });
+
+  if (!otpRecord) {
+    return res.status(400).json({
+      message: "Invalid OTP",
+    });
+  }
+
+  // Check Expiry
+  if (otpRecord.expiresAt < new Date()) {
+    return res.status(400).json({
+      message: "OTP has expired",
+    });
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: "OTP verified successfully",
+  });
+};
+
 exports.login = async(req, res) => {
   const { email, password } = req.body;
 
