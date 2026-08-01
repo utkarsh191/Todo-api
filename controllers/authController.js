@@ -5,6 +5,9 @@ const Otp = require("../models/Otp");
 const generateOTP = require("../utils/generateOTP");
 const sendMail = require("../utils/sendMail");
 const otpTemplate = require("../templates/otpTemplate");
+const RefreshToken = require("../models/RefreshToken");
+const generateTokens = require("../utils/generateTokens");
+
 
 exports.signup = async (req, res) => {
   const { name, email, password} = req.body;
@@ -260,22 +263,26 @@ exports.login = async(req, res) => {
     });
   } 
 
-  const token = jwt.sign(
-    {id: user._id},
-    process.env.JWT_SECRET,
-    {expiresIn: "1d"}
-  );
+const { accessToken, refreshToken } = generateTokens(user);
 
-  return res.status(200).json({
-    message: "login successful",
-    token,
-    user: {
-      id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-    },
-  });
+// Save Refresh Token in Database
+await RefreshToken.create({
+  user: user._id,
+  token: refreshToken,
+});
+
+return res.status(200).json({
+  success: true,
+  message: "Login successful",
+  accessToken,
+  refreshToken,
+  user: {
+    id: user._id,
+    name: user.name,
+    email: user.email,
+    role: user.role,
+  },
+});
 };
 
 exports.changePassword = async (req, res) => {
