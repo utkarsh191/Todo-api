@@ -15,4 +15,5 @@ const loginSchema = Joi.object({
 
 module.exports = {
   signupSchema,
+  loginSchema,
 };

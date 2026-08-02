@@ -319,3 +319,59 @@ exports.changePassword = async (req, res) => {
     message: "Password changed successfully",
   });
 };
+
+exports.refreshToken = async (req, res) => {
+  const { refreshToken } = req.body;
+
+  // Check if token is provided
+  if (!refreshToken) {
+    return res.status(400).json({
+      success: false,
+      message: "Refresh Token is required",
+    });
+  }
+
+  // Verify Refresh Token
+  let decoded;
+
+  try {
+    decoded = jwt.verify(
+      refreshToken,
+      process.env.JWT_REFRESH_SECRET
+    );
+  } catch (error) {
+    return res.status(401).json({
+      success: false,
+      message: "Invalid Refresh Token",
+    });
+  }
+
+  // Check token in database
+  const storedToken = await RefreshToken.findOne({
+    token: refreshToken,
+  });
+
+  if (!storedToken) {
+    return res.status(401).json({
+      success: false,
+      message: "Refresh Token not found",
+    });
+  }
+
+  // Generate New Access Token
+  const accessToken = jwt.sign(
+    {
+      id: decoded.id,
+    },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "15m",
+    }
+  );
+
+  return res.status(200).json({
+    success: true,
+    message: "New Access Token generated successfully",
+    accessToken,
+  });
+};

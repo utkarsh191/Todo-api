@@ -1,41 +1,63 @@
-const mongoose = require("mongoose");
+const express = require("express");
+const router = express.Router();
 
-const userSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    trim: true,
-  },
+const {
+  signup,
+  login,
+  verifyOTP,
+  resendOTP,
+  forgotPassword,
+  verifyForgotOTP,
+  resetPassword,
+  changePassword,
+  refreshToken,
+} = require("../controllers/authController");
 
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    lowercase: true,
-    trim: true,
-  },
+const authMiddleware = require("../middleware/authMiddleware");
 
-  password: {
-    type: String,
-    required: true,
-  },
+const validate = require("../middleware/validate");
+const { signupSchema, loginSchema} = require("../validation/authValidation");
 
-  role: {
-    type: String,
-    enum: ["user","admin"],
-    default: "user",
-  },
+/**
+ * @swagger
+ * /api/auth/signup:
+ *   post:
+ *     summary: Register a new user
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: User registered successfully
+ *       400:
+ *         description: Validation error
+ */
 
-  isVerified: {
-  type: Boolean,
-  default: false,
-},
-},
-{
-  timestamps: true,
-}
-);
+router.post("/signup", validate(signupSchema),signup);
+router.post("/login", validate(loginSchema), login);
+router.post("/verify-otp", verifyOTP);
+router.post("/resend-otp", resendOTP);
+router.post("/forgot-password", forgotPassword);
+router.post("/verifyForgotOTP", verifyForgotOTP);
+router.post("/change-password", authMiddleware, changePassword);
+router.post("/refresh-token", refreshToken);
 
-const User = mongoose.model("User", userSchema);
 
-module.exports = User;
+
+module.exports = router;
